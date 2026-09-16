@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Hold",
+    "slug": "hold-wallet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#080E18"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "money.hold.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#080E18"
+      },
+      "package": "money.hold.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    }
+  }
+}

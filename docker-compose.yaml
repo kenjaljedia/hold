@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hold-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-hold_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - hold_pgdata:/var/lib/postgresql/data
+      - ./src/backend/migrations/0001_init.up.sql:/docker-entrypoint-initdb.d/0001_init.up.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hold_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: hold-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-hold_db}
+      DB_SSLMODE: disable
+      JWT_SECRET: ${JWT_SECRET:-hold-super-secret-jwt-key-2026}
+      APP_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  hold_pgdata:
+    name: hold_pgdata
